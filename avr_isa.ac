@@ -1,0 +1,44 @@
+AC_ISA(avr){
+  ac_format Type_R = "%op:3 %rs:4 %opcodeR:5 %rd:4 %extender:16";
+  ac_format Type_I = "%op:3 %k2017:4 %opcodeI:4 %k16:1 %rd:4 %k1500:16";
+  ac_format Type_S = "%op:3 %rs:4 %zo1:5 %ry:4 %zo2:4 %opcodeS:8 %rd:4";
+  
+  ac_instr<Type_R> add, sub, mul, and;
+  ac_instr<Type_R> ldw, stw;
+  ac_instr<Type_I> subi, mov;
+  ac_instr<Type_S> divs;
+
+ac_asm_map reg {
+	"$"[0..31] = [0..31];
+}
+  
+  ISA_CTOR(avr){
+  add.set_asm("add %reg, %reg", rd, rs);
+  add.set_decoder(op=0x00, opcodeR=0x00, extender=0x00);
+ 
+  sub.set_asm("sub %reg, %reg", rd, rs);
+  sub.set_decoder(op=0x00, opcodeR=0x01, extender=0x00);
+ 
+  mul.set_asm("mul %reg, %reg", rd, rs);
+  mul.set_decoder(op=0x05, opcodeR=0x13, extender=0x00);
+  
+  and.set_asm("and %reg, %reg", rd, rs);  
+  and.set_decoder(op=0x00, opcodeR=0x06, extender=0x00);
+  
+  ldw.set_asm("ld.w %reg, %reg++", rd, rs);  
+  ldw.set_decoder(op=0x00, opcodeR=0x10, extender=0x00);
+  ldw.set_cycles(2);
+  
+  stw.set_asm("st.w %reg++, %reg", rs, rd);
+  stw.set_decoder(op=0x00, opcodeR=0x0A, extender=0x00);
+   
+  subi.set_asm("sub %reg, %exp%exp%exp", rd, k2017, k16, k1500);  
+  subi.set_decoder(op=0x07, opcodeI=0x01);
+
+  mov.set_asm("mov %reg, %exp%exp%exp", rd, k2017, k16, k1500);
+  mov.set_decoder(op=0x07, opcodeI=0x03);
+  
+  divs.set_asm("divs %reg, %reg, %reg", rd, rs, ry);  
+  divs.set_decoder(op=0x07, zo1=0x00, zo2=0x00, opcodeS=0xC0);
+  };
+};

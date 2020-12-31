@@ -1,0 +1,19 @@
+AC_ARCH(avr){
+
+  ac_wordsize 32;
+
+  ac_mem     MEM:16M;
+  ac_regbank RB:16;
+
+  ac_pipe  pipe={IF, ID, EX};
+
+  ac_format IF_ID = "%npc:32 %k2017:4:s %k21:1:s %k1500:16:s";
+  ac_format ID_EX = "%npc:32 %rs:4 %rd:4 %ry:4 %imm:32:s %cond:4";
+
+  ac_reg npc;
+  
+  ARCH_CTOR(avr) {
+    ac_isa("avr_isa.ac");
+    set_endian("big");
+  };
+};
